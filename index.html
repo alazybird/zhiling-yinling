@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>智领银龄 - 智慧助老系统</title>
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --border-radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--bg-color);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(10px);
+            padding-bottom: 40px;
+        }
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+            z-index: 10;
+        }
+
+        .hero-section {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        .hero-banner {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .features-wrapper {
+            margin: 16px 16px 16px 16px;
+            position: relative;
+            z-index: 2;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+        .feature-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            padding: 14px 10px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.05);
+            min-width: 0;
+        }
+        .feature-item:active {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+        .feature-icon-box {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            margin-right: 12px;
+            color: var(--primary-color);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.06);
+            flex-shrink: 0;
+        }
+        .feature-text {
+            font-size: 16px;
+            color: var(--text-main);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-title {
+            margin: 10px 24px 15px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background-color: var(--primary-color);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        .list-container {
+            padding: 0 20px;
+        }
+        .list-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        .list-card:active {
+            transform: translateY(2px);
+            background-color: #fafafa;
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+        }
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #10b981;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+        .card-text-group h3 {
+            font-size: 16px;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .card-text-group p {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+        .card-arrow {
+            color: #cbd5e1;
+            font-size: 20px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        }
+        .btn-back {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 5px 10px 5px 0;
+        }
+        .nav-title {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-right: 40px;
+        }
+
+        .content-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-frame {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 30px;
+        }
+        .detail-image {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            background-color: #f1f5f9;
+            min-height: 200px;
+            object-fit: cover;
+        }
+
+        .audio-section {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+        .audio-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+        audio {
+            width: 100%;
+            height: 45px;
+            outline: none;
+            border-radius: 30px;
+        }
+        audio::-webkit-media-controls-panel {
+            background-color: #f1f5f9;
+        }
+
+        /* 加载提示 */
+        .loading-tip {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+        .loading-tip.show {
+            display: block;
+        }
+
+        /* 错误提示 */
+        .error-tip {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            z-index: 1001;
+            display: none;
+            max-width: 80%;
+        }
+        .error-tip.show {
+            display: block;
+        }
+        .error-tip h3 {
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+        .error-tip p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .error-tip button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* 图片加载失败占位 */
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <div id="page1" class="page active">
+
+            <div class="hero-section">
+                <img class="hero-banner" src="https://s41.ax1x.com/2026/04/19/pecUjr8.png" alt="智领银龄 AI在夕阳 - 计小蓝智慧助老项目" onerror="this.src='https://via.placeholder.com/430x200/f59e0b/ffffff?text=智领银龄+AI在夕阳'">
+            </div>
+
+            <div class="features-wrapper">
+                <div class="features-grid">
+                    <div class="feature-item" onclick="navigateTo('打车出行')">
+                        <div class="feature-icon-box">🚗</div>
+                        <span class="feature-text">打车出行</span>
+                    </div>
+                    <div class="feature-item" onclick="navigateTo('公共交通')">
+                        <div class="feature-icon-box">🚌</div>
+                        <span class="feature-text">公共交通</span>
+                    </div>
+                    <div class="feature-item" onclick="navigateTo('快捷支付')">
+                        <div class="feature-icon-box">💳</div>
+                        <span class="feature-text">快捷支付</span>
+                    </div>
+                    <div class="feature-item" onclick="navigateTo('医保激活')">
+                        <div class="feature-icon-box">🏥</div>
+                        <span class="feature-text">医保激活</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">推荐服务机构</div>
+
+            <div class="list-container">
+                <div class="list-card" onclick="navigateTo('南京市浦口人民医院')">
+                    <div class="card-info">
+                        <div class="card-icon">✚</div>
+                        <div class="card-text-group">
+                            <h3>南京市浦口人民医院</h3>
+                            <p>点击查看就医指南与语音播报</p>
+                        </div>
+                    </div>
+                    <div class="card-arrow">❯</div>
+                </div>
+
+                <div class="list-card" onclick="navigateTo('南京市浦口区中医院')">
+                    <div class="card-info">
+                        <div class="card-icon">✚</div>
+                        <div class="card-text-group">
+                            <h3>南京市浦口区中医院</h3>
+                            <p>点击查看就医指南与语音播报</p>
+                        </div>
+                    </div>
+                    <div class="card-arrow">❯</div>
+                </div>
+
+                <div class="list-card" onclick="navigateTo('江苏省人民医院')">
+                    <div class="card-info">
+                        <div class="card-icon">✚</div>
+                        <div class="card-text-group">
+                            <h3>江苏省人民医院</h3>
+                            <p>点击查看就医指南与语音播报</p>
+                        </div>
+                    </div>
+                    <div class="card-arrow">❯</div>
+                </div>
+
+                <div class="list-card" onclick="navigateTo('南京鼓楼医院')">
+                    <div class="card-info">
+                        <div class="card-icon">✚</div>
+                        <div class="card-text-group">
+                            <h3>南京鼓楼医院</h3>
+                            <p>点击查看就医指南与语音播报</p>
+                        </div>
+                    </div>
+                    <div class="card-arrow">❯</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page2" class="page">
+
+            <div class="navbar">
+                <button class="btn-back" onclick="navigateBack()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    返回
+                </button>
+                <div class="nav-title" id="page2-title">详情内容</div>
+            </div>
+
+            <div class="content-body">
+
+                <div class="image-frame">
+                    <img class="detail-image" id="detail-img" src="" alt="内容展示图" onerror="handleImageError(this)">
+                </div>
+
+                <div class="audio-section">
+                    <div class="audio-title">🎙️ 语音引导播报</div>
+                    <audio id="detail-audio" controls preload="metadata">
+                        <source src="" type="audio/mpeg">
+                        <source src="" type="audio/mp4">
+                        <source src="" type="video/mp4">
+                        您的浏览器不支持音频播放功能。
+                    </audio>
+                    <p id="audio-error" style="color: #ef4444; font-size: 12px; margin-top: 10px; display: none;">音频加载失败，请检查网络连接</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 加载提示 -->
+    <div class="loading-tip" id="loadingTip">加载中...</div>
+
+    <!-- 错误提示 -->
+    <div class="error-tip" id="errorTip">
+        <h3>加载失败</h3>
+        <p id="errorMessage">请检查网络连接后重试</p>
+        <button onclick="hideError()">确定</button>
+    </div>
+
+    <script>
+        // 页面元素
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const page2Title = document.getElementById('page2-title');
+        const detailImg = document.getElementById('detail-img');
+        const detailAudio = document.getElementById('detail-audio');
+        const loadingTip = document.getElementById('loadingTip');
+        const errorTip = document.getElementById('errorTip');
+        const errorMessage = document.getElementById('errorMessage');
+        const audioError = document.getElementById('audio-error');
+
+        // 内容数据配置
+        const contentData = {
+            '打车出行': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecdqnf.png',
+                audio: '0.mp3'
+            },
+            '公共交通': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecwmC9.png',
+                audio: '1.mp3'
+            },
+            '快捷支付': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecwug1.png',
+                audio: '2.mp3'
+            },
+            '医保激活': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecwN8A.png',
+                audio: '3.mp3'
+            },
+            '南京市浦口人民医院': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecw0Df.png',
+                audio: '4.mp3'
+            },
+            '南京市浦口区中医院': {
+                image: 'https://s41.ax1x.com/2026/04/20/pecwoaF.png',
+                audio: '5.mp3'
+            },
+            '江苏省人民医院': {
+                image: 'https://s41.ax1x.com/2026/04/20/pec0mdS.png',
+                audio: '6.mp3'
+            },
+            '南京鼓楼医院': {
+                image: 'https://s41.ax1x.com/2026/04/20/pec0KiQ.png',
+                audio: '7.mp3'
+            }
+        };
+
+        // 显示加载提示
+        function showLoading() {
+            loadingTip.classList.add('show');
+        }
+
+        // 隐藏加载提示
+        function hideLoading() {
+            loadingTip.classList.remove('show');
+        }
+
+        // 显示错误提示
+        function showError(message) {
+            errorMessage.textContent = message || '请检查网络连接后重试';
+            errorTip.classList.add('show');
+        }
+
+        // 隐藏错误提示
+        function hideError() {
+            errorTip.classList.remove('show');
+        }
+
+        // 图片加载错误处理
+        function handleImageError(img) {
+            img.style.display = 'none';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.textContent = '图片加载失败';
+            img.parentNode.appendChild(placeholder);
+        }
+
+        // 跳转到详情页
+        function navigateTo(title) {
+            showLoading();
+
+            try {
+                page2Title.innerText = title || "详情内容";
+
+                // 获取对应内容数据
+                const data = contentData[title] || { image: '', audio: '' };
+
+                // 设置图片
+                if (data.image) {
+                    detailImg.style.display = 'block';
+                    detailImg.src = data.image;
+                    // 清除之前的占位符
+                    const placeholder = detailImg.parentNode.querySelector('.image-placeholder');
+                    if (placeholder) placeholder.remove();
+                }
+
+                // 设置音频
+                if (data.audio) {
+                    detailAudio.src = data.audio;
+                    audioError.style.display = 'none';
+                } else {
+                    detailAudio.src = '';
+                    audioError.style.display = 'block';
+                    audioError.textContent = '暂无语音播报';
+                }
+
+                // 切换页面
+                page1.classList.remove('active');
+                page2.classList.add('active');
+                page2.scrollTo(0, 0);
+
+            } catch (error) {
+                console.error('导航错误:', error);
+                showError('页面加载失败，请重试');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 返回首页
+        function navigateBack() {
+            try {
+                page2.classList.remove('active');
+                page1.classList.add('active');
+
+                // 停止所有音频播放
+                const audios = document.querySelectorAll('audio');
+                audios.forEach(audio => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
+
+                // 重置音频错误提示
+                audioError.style.display = 'none';
+
+            } catch (error) {
+                console.error('返回错误:', error);
+            }
+        }
+
+        // 音频错误监听
+        detailAudio.addEventListener('error', function() {
+            audioError.style.display = 'block';
+            audioError.textContent = '音频加载失败';
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('智领银龄应用已加载');
+
+            // 检测浏览器兼容性
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            console.log('设备类型:', isMobile ? '移动端' : '桌面端');
+
+            // 检测微信浏览器
+            const isWechat = /MicroMessenger/i.test(navigator.userAgent);
+            if (isWechat) {
+                console.log('微信浏览器');
+            }
+        });
+
+        // 全局错误处理
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('全局错误:', message, '行号:', lineno);
+            return true;
+        };
+    </script>
+</body>
+</html>
