@@ -345,6 +345,35 @@
             color: #94a3b8;
             font-size: 14px;
         }
+
+        /* 图片加载中样式 */
+        .image-loading {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 14px;
+            gap: 12px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -576,8 +605,32 @@
 
                 // 设置图片
                 if (data.image) {
-                    detailImg.style.display = 'block';
+                    // 先显示加载中
+                    detailImg.style.display = 'none';
                     detailImg.src = data.image;
+                    
+                    // 添加加载中提示
+                    let loadingDiv = detailImg.parentNode.querySelector('.image-loading');
+                    if (!loadingDiv) {
+                        loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'image-loading';
+                        loadingDiv.innerHTML = '<div class="loading-spinner"></div><p>图片加载中...</p>';
+                        detailImg.parentNode.appendChild(loadingDiv);
+                    }
+                    loadingDiv.style.display = 'flex';
+                    
+                    // 图片加载完成后显示
+                    detailImg.onload = function() {
+                        detailImg.style.display = 'block';
+                        if (loadingDiv) loadingDiv.style.display = 'none';
+                    };
+                    
+                    // 图片加载失败
+                    detailImg.onerror = function() {
+                        if (loadingDiv) loadingDiv.style.display = 'none';
+                        handleImageError(detailImg);
+                    };
+                    
                     // 清除之前的占位符
                     const placeholder = detailImg.parentNode.querySelector('.image-placeholder');
                     if (placeholder) placeholder.remove();
@@ -621,6 +674,10 @@
 
                 // 重置音频错误提示
                 audioError.style.display = 'none';
+
+                // 清空图片，避免显示旧图片
+                detailImg.style.display = 'none';
+                detailImg.src = '';
 
             } catch (error) {
                 console.error('返回错误:', error);
